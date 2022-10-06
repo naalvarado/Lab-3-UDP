@@ -4,13 +4,13 @@ signal(SIGPIPE,SIG_DFL)
 
 import datetime, logging, socket, sys, threading, os, hashlib, time, tqdm
 #"192.168.47.129"
-HOST = '192.168.47.129'
+HOST = '0.0.0.0'
 PORT = 7777
 FORMAT = 'utf-8'
 BUFFER_SIZE = 4096
 SEPARATOR = "<SEPARATOR>"
 
-s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 print('Socket created')
 
 #Bind socket 
@@ -23,8 +23,8 @@ except socket.error as msg:
 print ('Socket bind complete')
 
 #Start listening on socket
-s.listen(10)
-print ('Socket now listening')
+#s.listen(10)
+#print ('Socket now listening')
 
 def getHashDigest(fileName):
     h = hashlib.sha1()
@@ -41,12 +41,13 @@ def getHashDigest(fileName):
 def clientthread(conn, fName):
     print("before id")
     # Identificacion del cliente de la conexion
-    idClient = str(conn.recv(1024).decode(FORMAT))
+    idClient, ad = s.recvfrom(1024)
+    idClient = idClient.decode(FORMAT)
     print(idClient)
 
     # start sending the file
     fileSizeBytes = os.path.getsize(fName)
-    conn.send(f"{fName}{SEPARATOR}{fileSizeBytes}".encode())
+    s.sendto(f"{fName}{SEPARATOR}{fileSizeBytes}".encode(), ad)
     print(fName)
     print(fileSizeBytes)
     progress = tqdm.tqdm(range(fileSizeBytes), f"Sending {fName}", unit="B", unit_scale=True, unit_divisor=1024)
@@ -60,12 +61,12 @@ def clientthread(conn, fName):
             # read the bytes from the file
             bytes_read = f.read(BUFFER_SIZE)
             if not bytes_read:
-                conn.sendall(bytes("FIN", FORMAT))
+                s.sendto(bytes("FIN", FORMAT), ad)
                 # file transmitting is done
                 break
             # we use sendall to assure transimission in 
             # busy networks
-            conn.sendall(bytes_read)
+            s.sendto(bytes_read, ad)
             # update the progress bar
             progress.update(len(bytes_read))
 
@@ -73,7 +74,8 @@ def clientthread(conn, fName):
         print("FINALIZA ENVIO")
 
     print ("ESPERA ACK")
-    exito = str(conn.recv(1024).decode(FORMAT))
+    exito, ad = s.recvfrom(1024)
+    exito = str(exito.decode(FORMAT))
     print("RECIBE ACK")
     if exito != 'ACK':
         logging.error('FROM CLIENT #{}: File transfer failed')
@@ -92,17 +94,21 @@ def clientthread(conn, fName):
     hashValue = getHashDigest(fName)
 
     #Envio de hash
-    conn.send(bytes(hashValue, FORMAT))
+    s.sendto(bytes(hashValue, FORMAT), ad)
     logging.info('SENT HASH {} TO CLIENT #{}'.format(hashValue, idClient))
     print("FIN CON CLIENT: " + str(idClient))
-    conn.close()
+    #conn.close()
 
 #Master client
-conn, addr = s.accept()
-print ('Connected with ' + addr[0] + ':' + str(addr[1]))
-fileName = conn.recv(1024).decode(FORMAT)
+#conn, addr = s.accept()
+#print ('Connected with ' + addr[0] + ':' + str(addr[1]))
+fileName, ad = s.recvfrom(1024)
+fileName = fileName.decode(FORMAT)
+print("Archivo requerido " + str(fileName))
 #nClients = int.from_bytes(conn.recv(1024), "big")
-nClients = int(conn.recv(1024).decode(FORMAT))
+#nClients = int(conn.recv(1024).decode(FORMAT))
+nClients, ad = s.recvfrom(1024)
+nClients = int(nClients.decode(FORMAT))
 #conn.close()
 
 logs = os.path.exists("./Logs")
@@ -118,18 +124,17 @@ logging.basicConfig(format=format, datefmt="%H:%M:%S", filename=logFileName, lev
 tList = []
 #now keep talking with the client
 print("antes del while")
-print(str(fileName))
 print(str(nClients))
 while nClients > 0:
     print(nClients)
     print("dentro del while")
     #wait to accept a connection - blocking call
-    conn, addr = s.accept()
-    print('Connected with ' + addr[0] + ':' + str(addr[1]))
-    logging.info('Connected with ' + addr[0] + ':' + str(addr[1]))
+    #conn, addr = s.accept()
+    #print('Connected with ' + addr[0] + ':' + str(addr[1]))
+    #logging.info('Connected with ' + addr[0] + ':' + str(addr[1]))
 
     #start new thread takes 1st argument as a function name to be run, second is the tuple of arguments to the function.
-    t = threading.Thread(target=clientthread, args=(conn, fileName))
+    t = threading.Thread(target=clientthread, args=(ad, fileName))
     tList.append(t)
 
     nClients -= 1
