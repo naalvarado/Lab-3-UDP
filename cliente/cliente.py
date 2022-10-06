@@ -8,8 +8,8 @@ import tqdm
 import hashlib
 import time
 
-s = socket.socket()
-HOST = "192.168.47.129"
+s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+HOST = "192.168.20.48"
 PORT = 7777
 FORMAT = 'utf-8'
 BUFFER_SIZE = 4096
@@ -41,7 +41,7 @@ def getHashDigest(fileName):
 
 def conn(tid):
     print("Comienza hilo: " + str(tid))
-    client_socket = socket.socket()
+    client_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     try:
         client_socket.connect((HOST,PORT))
     except socket.error as msg:
@@ -91,12 +91,12 @@ def conn(tid):
     client_socket.close()
 
 if __name__ == "__main__":
-    try:
-        s.connect((HOST,PORT))
-    except socket.error as msg:
-        print(msg)
-    print("Conexion establecida")
-    logging.info("Conexion establecida con: " + str(HOST) + " en puerto: " + str(PORT))
+    #try:
+    #    s.connect((HOST,PORT))
+    #except socket.error as msg:
+    #    print(msg)
+    #print("Conexion establecida")
+    #logging.info("Conexion establecida con: " + str(HOST) + " en puerto: " + str(PORT))
 
     print("Que archivo quiere descargar?")
     print("1) 100Mb")
@@ -112,11 +112,11 @@ if __name__ == "__main__":
         print("input no valido")
         exit(1)
     message = bytes(fileName, FORMAT)
-    s.sendall(message)
+    s.sendto(message, (HOST,PORT))
     print("Numero de Conexiones: ")
     cons = input()
     message = bytes(cons, FORMAT)
-    s.sendall(message)
+    s.sendto(message, (HOST,PORT))
     print("mensaje enviado")
 
     logging.info("Creando " + str(cons) + " clientes para descargar el archivo " + str(fileName))
