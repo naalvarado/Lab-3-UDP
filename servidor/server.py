@@ -4,7 +4,7 @@ signal(SIGPIPE,SIG_DFL)
 
 import datetime, logging, socket, sys, threading, os, hashlib, time, tqdm
 #"192.168.47.129"
-HOST = '0.0.0.0'
+HOST = "192.168.47.129"
 PORT = 7777
 FORMAT = 'utf-8'
 BUFFER_SIZE = 4096
@@ -25,17 +25,6 @@ print ('Socket bind complete')
 #Start listening on socket
 #s.listen(10)
 #print ('Socket now listening')
-
-def getHashDigest(fileName):
-    h = hashlib.sha1()
-
-    with open(fileName, 'rb') as file:
-        chunk = 0
-        while chunk != b'':
-            chunk = file.read(1024)
-            h.update(chunk)
-    
-    return h.hexdigest()
 
 #Function for handling connections. This will be used to create threads
 def clientthread(conn, fName):
@@ -73,40 +62,19 @@ def clientthread(conn, fName):
         logging.info('SENT {} WITH SIZE {}MB TO CLIENT #{}'.format(fName, str(fileSizeBytes/ (1024 * 1024)), idClient))
         print("FINALIZA ENVIO")
 
-    print ("ESPERA ACK")
-    exito, ad = s.recvfrom(1024)
-    exito = str(exito.decode(FORMAT))
-    print("RECIBE ACK")
-    if exito != 'ACK':
-        logging.error('FROM CLIENT #{}: File transfer failed')
-        print("NO RECIBE ACK")
-        conn.close()
+        end = time.time()
 
-    logging.info('FROM CLIENT #{}: {}'.format(idClient, exito))
-    
-    end = time.time()
-
-    print("TIEMPO TRANSF: " + str(end))
+    print("TIEMPO TRANSF: " + str(end-start))
     #Calculo de tiempo de transferencia
     logging.info('TRANSFER TIME FOR CLIENT #{}: {}'.format(idClient, end-start))
 
-    # Calcular hash para el archivo
-    hashValue = getHashDigest(fName)
-
-    #Envio de hash
-    s.sendto(bytes(hashValue, FORMAT), ad)
-    logging.info('SENT HASH {} TO CLIENT #{}'.format(hashValue, idClient))
     print("FIN CON CLIENT: " + str(idClient))
     #conn.close()
 
 #Master client
-#conn, addr = s.accept()
-#print ('Connected with ' + addr[0] + ':' + str(addr[1]))
 fileName, ad = s.recvfrom(1024)
 fileName = fileName.decode(FORMAT)
 print("Archivo requerido " + str(fileName))
-#nClients = int.from_bytes(conn.recv(1024), "big")
-#nClients = int(conn.recv(1024).decode(FORMAT))
 nClients, ad = s.recvfrom(1024)
 nClients = int(nClients.decode(FORMAT))
 #conn.close()

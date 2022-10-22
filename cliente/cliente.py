@@ -9,7 +9,7 @@ import hashlib
 import time
 
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-HOST = "192.168.20.48"
+HOST = "192.168.47.129"
 PORT = 7777
 FORMAT = 'utf-8'
 BUFFER_SIZE = 4096
@@ -25,19 +25,7 @@ now = datetime.datetime.now()
 logfile = "./Logs/" + str(now.year) + "-" + str(now.month) + "-" + str(now.day) + "-" + str(now.hour) + "-" + str(now.minute) + "-" + str(now.second) + ".log"
 logging.basicConfig(format=format, level=logging.INFO, datefmt="%H:%M:%S", filename=logfile)
 
-filesize = 0
 fileName = ""
-
-def getHashDigest(fileName):
-    h = hashlib.sha1()
-
-    with open(fileName, 'rb') as file:
-        chunk = 0
-        while chunk != b'':
-            chunk = file.read(1024)
-            h.update(chunk)
-    
-    return h.hexdigest()
 
 def conn(tid):
     print("Comienza hilo: " + str(tid))
@@ -65,8 +53,9 @@ def conn(tid):
 
     clientFileName = "ArchivosRecibidos/" + "Cliente" + str(tid) + "-Prueba-" + cons +".txt"
 
-    start = time.time()
+    
     with open( clientFileName, "wb+") as f:
+        start = time.time()
         while True:
             bytes_read = client_socket.recv(BUFFER_SIZE)
             print(str(bytes_read.decode(FORMAT)))
@@ -78,25 +67,14 @@ def conn(tid):
             f.write(bytes_read)
             
             progress.update(len(bytes_read))
+        
+        end = time.time()
     
-    end = time.time()
     logging.info('TRANSFER TIME FOR CLIENT #{}: {}'.format(idClient, end-start))
-    client_socket.sendall(bytes("ACK", FORMAT))
-    hashDesc = client_socket.recv(1024).decode(FORMAT)
-    realHash = getHashDigest(clientFileName)
-    if hashDesc == realHash:
-        logging.info("El hash corresponde para el cliente:" + str(tid))
-    else:
-        logging.info("El hash NO corresponde para el cliente:" + str(tid))
+
     client_socket.close()
 
 if __name__ == "__main__":
-    #try:
-    #    s.connect((HOST,PORT))
-    #except socket.error as msg:
-    #    print(msg)
-    #print("Conexion establecida")
-    #logging.info("Conexion establecida con: " + str(HOST) + " en puerto: " + str(PORT))
 
     print("Que archivo quiere descargar?")
     print("1) 100Mb")
@@ -104,10 +82,8 @@ if __name__ == "__main__":
     fileCode = input()
     if fileCode == "1":
         fileName = "100MB.txt"
-        filesize = 104857600
     elif fileCode == "2":
         fileName = "250MB.txt"
-        filesize = 250000
     else:
         print("input no valido")
         exit(1)
