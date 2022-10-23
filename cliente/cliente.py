@@ -30,6 +30,7 @@ fileName = ""
 def conn(tid):
     print("Comienza hilo: " + str(tid))
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    client_socket.settimeout(1.0)
     try:
         client_socket.connect((HOST,PORT))
     except socket.error as msg:
@@ -37,7 +38,7 @@ def conn(tid):
         exit(1)
     logging.info("Conexion establecida con: " + str(HOST) + " en puerto: " + str(PORT) + " cliente " + str(tid))
     idClient = bytes(str(tid), FORMAT)
-    client_socket.sendall(idClient)
+    client_socket.sendto(idClient, (HOST,PORT))
     print("ID enviado")
 
     received = client_socket.recv(BUFFER_SIZE).decode()
@@ -47,11 +48,11 @@ def conn(tid):
     print(fileSizeBytes)
     progress = tqdm.tqdm(range(fileSizeBytes), f"Receiving {fName}", unit="B", unit_scale=True, unit_divisor=1024)
 
-    logs = os.path.exists("ArchivosRecibidos")
+    logs = os.path.exists("./ArchivosRecibidos")
     if not logs:
-        os.makedirs("ArchivosRecibidos")
+        os.makedirs("./ArchivosRecibidos")
 
-    clientFileName = "ArchivosRecibidos/" + "Cliente" + str(tid) + "-Prueba-" + cons +".txt"
+    clientFileName = "./ArchivosRecibidos/" + "Cliente" + str(tid) + "-Prueba-" + cons +".txt"
 
     
     with open( clientFileName, "wb+") as f:
@@ -69,6 +70,12 @@ def conn(tid):
             progress.update(len(bytes_read))
         
         end = time.time()
+    
+    newFileSize = os.path.getsize(clientFileName)
+    if (fileSizeBytes == newFileSize):
+        logging.info('CLIENT # {}: {}->{}%'.format(idClient, 'TRANSFERENCIA COMPLETA (EXITOSA)', newFileSize*100/fileSizeBytes))
+    else:
+        logging.info('CLIENT # {}: {}->{}%'.format(idClient, 'TRANSFERENCIA INCOMPLETA (NO EXITOSA)', newFileSize*100/fileSizeBytes))
     
     logging.info('TRANSFER TIME FOR CLIENT #{}: {}'.format(idClient, end-start))
 
