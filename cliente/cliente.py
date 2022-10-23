@@ -71,9 +71,9 @@ def conn(tid):
                 end = time.time()
                 newFileSize = os.path.getsize(clientFileName)
                 if (fileSizeBytes == newFileSize):
-                    logging.info('CLIENT # {}: {}->{}%'.format(idClient, 'TRANSFERENCIA COMPLETA (EXITOSA)', newFileSize*100/fileSizeBytes))
+                    logging.info('CLIENT # {}: {}->{}Bytes-{}%'.format(idClient, 'TRANSFERENCIA COMPLETA (EXITOSA)',newFileSize, newFileSize*100/fileSizeBytes))
                 else:
-                    logging.info('CLIENT # {}: {}->{}%'.format(idClient, 'TRANSFERENCIA INCOMPLETA (NO EXITOSA)', newFileSize*100/fileSizeBytes))
+                    logging.info('CLIENT # {}: {}->{}Bytes-{}%'.format(idClient, 'TRANSFERENCIA INCOMPLETA (NO EXITOSA)',newFileSize, newFileSize*100/fileSizeBytes))
                 
                 logging.info('TRANSFER TIME FOR CLIENT #{}: {}'.format(idClient, end-start))
 
