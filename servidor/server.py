@@ -50,11 +50,8 @@ def clientthread(conn, fName):
             # read the bytes from the file
             bytes_read = f.read(BUFFER_SIZE)
             if not bytes_read:
-                s.sendto(bytes("FIN", FORMAT), ad)
-                # file transmitting is done
                 break
-            # we use sendall to assure transimission in 
-            # busy networks
+            #time.sleep(0.02)
             s.sendto(bytes_read, ad)
             # update the progress bar
             progress.update(len(bytes_read))

@@ -7,6 +7,7 @@ import os
 import tqdm
 import hashlib
 import time
+import select
 
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 HOST = "192.168.47.129"
@@ -14,6 +15,7 @@ PORT = 7777
 FORMAT = 'utf-8'
 BUFFER_SIZE = 4096
 SEPARATOR = "<SEPARATOR>"
+TIMEOUT = 3
 
 
 logs = os.path.exists("./Logs")
@@ -30,7 +32,7 @@ fileName = ""
 def conn(tid):
     print("Comienza hilo: " + str(tid))
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    client_socket.settimeout(1.0)
+    #client_socket.settimeout(2.0)
     try:
         client_socket.connect((HOST,PORT))
     except socket.error as msg:
@@ -58,29 +60,27 @@ def conn(tid):
     with open( clientFileName, "wb+") as f:
         start = time.time()
         while True:
-            bytes_read = client_socket.recv(BUFFER_SIZE)
-            print(str(bytes_read.decode(FORMAT)))
-            if str(bytes_read.decode(FORMAT)) == "FIN":
+            ready = select.select([client_socket], [], [], TIMEOUT)
+
+            if ready[0]:
+                bytes_read = client_socket.recv(BUFFER_SIZE)
+                f.write(bytes_read)
+
+                progress.update(len(bytes_read))
+            else:
+                end = time.time()
+                newFileSize = os.path.getsize(clientFileName)
+                if (fileSizeBytes == newFileSize):
+                    logging.info('CLIENT # {}: {}->{}%'.format(idClient, 'TRANSFERENCIA COMPLETA (EXITOSA)', newFileSize*100/fileSizeBytes))
+                else:
+                    logging.info('CLIENT # {}: {}->{}%'.format(idClient, 'TRANSFERENCIA INCOMPLETA (NO EXITOSA)', newFileSize*100/fileSizeBytes))
+                
+                logging.info('TRANSFER TIME FOR CLIENT #{}: {}'.format(idClient, end-start))
+
+                client_socket.close()    
                 break
-            if not bytes_read:
-                break
-            
-            f.write(bytes_read)
-            
-            progress.update(len(bytes_read))
         
-        end = time.time()
     
-    newFileSize = os.path.getsize(clientFileName)
-    if (fileSizeBytes == newFileSize):
-        logging.info('CLIENT # {}: {}->{}%'.format(idClient, 'TRANSFERENCIA COMPLETA (EXITOSA)', newFileSize*100/fileSizeBytes))
-    else:
-        logging.info('CLIENT # {}: {}->{}%'.format(idClient, 'TRANSFERENCIA INCOMPLETA (NO EXITOSA)', newFileSize*100/fileSizeBytes))
-    
-    logging.info('TRANSFER TIME FOR CLIENT #{}: {}'.format(idClient, end-start))
-
-    client_socket.close()
-
 if __name__ == "__main__":
 
     print("Que archivo quiere descargar?")
