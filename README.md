@@ -4,7 +4,7 @@ Para hacer uso de las aplicaciones se debe cambiar el parámetro HOST por la ip 
 
 **Importante:** Para cada prueba es recomendable matar el puerto que se quiere usar y abrir una nueva terminal en el cliente. 
 
-sudo f user -k 7777/tcp : Este comando mata el puerto 7777
+sudo fuser -k 7777/tcp : Este comando mata el puerto 7777
 
 
 Los archivos recibidos no se muestran en este repositorio porque son demasiado pesados para que github los acepte, de modo que en el enlace de mega están los que deben ir en el servidor para hacer las transferencias. 
