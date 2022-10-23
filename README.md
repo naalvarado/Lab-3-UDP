@@ -17,4 +17,4 @@ Los Logs de este repositorio corresponden a los generados por el Cliente en cada
 
 -	Archivos server:  https://mega.nz/folder/UdQmHIRa#9bAVO6ANb2-9-J8ZUFqCCA
 
-- Video: 
+- Video: https://youtu.be/qoqZqkJ2UgI
