@@ -1,6 +1,6 @@
 # Laboratorio 3 Act 2
 
-Para hacer uso de las aplicaciones se debe cambiar el parámetro HOST por la ip de la maquina virtual en que se ejecuta el servidor e instalar algunas librerias tales como tqdm, de ser necesario. Además deberá ejecutar primero server.py en la máquina Ubuntu y posteriormente ejecutar client.py en la máquina windows. En la consola donde ejecute client.py se desplegará un menú donde usted podrá seleccionar el archivo que desea transferir y donde podrá especificar el número de conexiones concurrentes que desea tener.
+Para hacer uso de las aplicaciones se debe cambiar el parámetro HOST por la ip de la maquina virtual en que se ejecuta el servidor e instalar algunas librerias tales como tqdm (sudo snap install tqdm), de ser necesario. Además deberá ejecutar primero server.py en la máquina Ubuntu y posteriormente ejecutar client.py en la máquina windows. En la consola donde ejecute client.py se desplegará un menú donde usted podrá seleccionar el archivo que desea transferir y donde podrá especificar el número de conexiones concurrentes que desea tener.
 
 **Importante:** Para cada prueba es recomendable matar el puerto que se quiere usar y abrir una nueva terminal en el cliente. 
 
