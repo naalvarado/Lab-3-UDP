@@ -4,7 +4,7 @@ Para hacer uso de las aplicaciones se debe cambiar el parámetro HOST por la ip 
 
 **Importante:** Para cada prueba es recomendable matar el puerto que se quiere usar y abrir una nueva terminal en el cliente. 
 
-sudo fuser -k 7777/tcp : Este comando mata el puerto 7777
+sudo fuser -k 7777/udp : Este comando mata el puerto 7777
 
 
 Los archivos recibidos no se muestran en este repositorio porque son demasiado pesados para que github los acepte, de modo que en el enlace de mega están los que deben ir en el servidor para hacer las transferencias. 
@@ -13,8 +13,8 @@ Los Logs de este repositorio corresponden a los generados por el Cliente en cada
 
 ## Enlaces:
 
--	Capturas de tráfico: https://mega.nz/folder/YFA33QJC#l-384CtDG8hV-fH7Dhtdfw 
+-	Capturas de tráfico: 
 
--	Archivos server: https://mega.nz/folder/ZR5AiIjR#G1XG6PQnewpwsum1FvzM1Q 
+-	Archivos server:  
 
-- Video: https://youtu.be/mUVjLdx7Dew
+- Video: 
