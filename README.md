@@ -13,8 +13,8 @@ Los Logs de este repositorio corresponden a los generados por el Cliente en cada
 
 ## Enlaces:
 
--	Capturas de tráfico: 
+-	Capturas de tráfico: https://mega.nz/folder/tMpXGYiA#zZswgKxSSlPiRqNBIO_8EQ
 
--	Archivos server:  
+-	Archivos server:  https://mega.nz/folder/UdQmHIRa#9bAVO6ANb2-9-J8ZUFqCCA
 
 - Video: 
