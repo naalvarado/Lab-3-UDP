@@ -1,0 +1,4 @@
+20:47:22: Creando 1 clientes para descargar el archivo 100MB.txt
+20:47:22: Conexion establecida con: 192.168.47.129 en puerto: 7777 cliente 0
+20:47:26: CLIENT # b'0': TRANSFERENCIA INCOMPLETA (NO EXITOSA)->103227392Bytes-98.4453125%
+20:47:26: TRANSFER TIME FOR CLIENT #b'0': 4.383210182189941
